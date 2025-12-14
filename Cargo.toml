@@ -2,6 +2,7 @@
 name = "dokku-daemon-rs"
 version = "0.1.0"
 edition = "2024"
+license = "AGPLv3"
 
 [dependencies]
 anyhow = {version="1.0.100", default-features = false }
