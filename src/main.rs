@@ -1,7 +1,9 @@
+use std::fs;
+use std::io::ErrorKind;
 use std::process::Command;
 
 use anyhow::{Context, Result};
-use log::{debug, info, warn};
+use log::{debug, error, info, warn};
 use serde::Serialize;
 use tokio::io::Interest;
 use tokio::net::{UnixListener, UnixStream};
@@ -65,6 +67,14 @@ async fn main() -> Result<()> {
     env_logger::init();
     let dokku_daemon_socket_path = std::env::var("DOKKU_DAEMON_SOCKET_PATH")
         .unwrap_or_else(|_| "/var/run/dokku-daemon/dokku-daemon.sock".into());
+    if let Err(fs_err) = fs::remove_file(&dokku_daemon_socket_path) {
+        match fs_err.kind() {
+            ErrorKind::NotFound => {}
+            _ => {
+                error!("Error deleting {dokku_daemon_socket_path}: {fs_err}");
+            }
+        }
+    }
     let listener = UnixListener::bind(&dokku_daemon_socket_path)
         .with_context(|| format!("Binding {dokku_daemon_socket_path}"))?;
 
