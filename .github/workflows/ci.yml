@@ -1,0 +1,51 @@
+on: 
+  push:
+    branches:
+      - main
+  pull_request:
+
+name: Continuous integration
+
+jobs:
+  test:
+    name: Test suite
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust:
+          - stable
+          - beta
+          - nightly
+    steps:
+      - uses: actions/checkout@v3.5.0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: clippy, rustfmt
+      - uses: Swatinem/rust-cache@v2.2.1
+      - name: Check formatting
+        run: cargo fmt -- --check
+        if: ${{ matrix.rust == 'nightly' }}
+      - name: Clippy
+        run: cargo clippy
+        env:
+          RUSTFLAGS: -Dwarnings
+        continue-on-error: ${{ matrix.rust == 'nightly' || matrix.rust == 'beta' }}
+      - name: Build
+        run: cargo build
+      - name: Test
+        run: cargo test
+        env:
+          RUST_LOG: debug
+
+  minimal-versions:
+    name: minimal versions check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3.5.0
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: nightly
+      - name: Remove lock
+        run: rm Cargo.lock
+      - run: cargo build -Z minimal-versions

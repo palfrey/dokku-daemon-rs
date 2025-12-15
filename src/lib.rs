@@ -63,7 +63,7 @@ async fn handle_client(stream: UnixStream, tx: Sender<()>) -> Result<()> {
 }
 
 pub async fn run(dokku_daemon_socket_path: &str) -> Result<()> {
-    if let Err(fs_err) = fs::remove_file(&dokku_daemon_socket_path) {
+    if let Err(fs_err) = fs::remove_file(dokku_daemon_socket_path) {
         match fs_err.kind() {
             ErrorKind::NotFound => {}
             _ => {
@@ -71,7 +71,7 @@ pub async fn run(dokku_daemon_socket_path: &str) -> Result<()> {
             }
         }
     }
-    let listener = UnixListener::bind(&dokku_daemon_socket_path)
+    let listener = UnixListener::bind(dokku_daemon_socket_path)
         .with_context(|| format!("Binding {dokku_daemon_socket_path}"))?;
 
     let (tx, mut rx) = mpsc::channel::<()>(1);
