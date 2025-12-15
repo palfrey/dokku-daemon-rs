@@ -1,0 +1,12 @@
+[Unit]
+Description=dokku-daemon
+
+[Service]
+Environment="DOKKU_DAEMON_SOCKET_PATH=/var/run/dokku-daemon/dokku-daemon.sock"
+Environment="USER=dokku"
+Environment="GROUP=dokku"
+Environment="PERMS=0777"
+ExecStart=/usr/bin/dokku-daemon
+
+[Install]
+WantedBy=multi-user.target
