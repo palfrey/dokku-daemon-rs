@@ -6,6 +6,7 @@ license = "AGPLv3"
 
 [dependencies]
 anyhow = {version="1.0.100", default-features = false }
+clap = {version="4.5.53", default-features = false, features=["help", "std", "cargo", "usage"]}
 env_logger = {version="0.11.8",default-features = false }
 log = {version="0.4.29",default-features = false }
 serde = {version="1.0.228", features = ["derive"]}
